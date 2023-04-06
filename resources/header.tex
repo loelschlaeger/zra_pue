@@ -1,0 +1,74 @@
+% packages
+\usepackage{graphicx}
+\usepackage[german]{babel}
+\usepackage{setspace}
+\usepackage[fleqn]{amsmath}
+\usepackage{amsfonts,amssymb}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage[utf8]{inputenc}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm,includeheadfoot]{geometry}
+\usepackage{multicol}
+\usepackage[misc]{ifsym}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{tasks}
+\usepackage{framed}
+
+% style
+\fancyhf{} 
+\fancyhead[L]{\begin{tabular}{ll}
+\href{https://ekvv.uni-bielefeld.de/kvv_publ/publ/vd?id=388066971}{Praktische Übung zur Zeitreihenanalyse} \\
+Sommersemester 2023
+\end{tabular}
+}
+\fancyhead[C]{}
+\fancyhead[R]{
+    \begin{tabular}{r}
+    \href{mailto:lennart.oelschlaeger@uni-bielefeld.de}{Lennart Oelschl\"ager \Letter} \\
+       14-tägig, Mo, 16:15 -- 17:45, T2-213
+    \end{tabular}
+}
+\renewcommand{\headrulewidth}{0pt} 
+\fancyfoot[C]{\thepage}
+\renewcommand{\footrulewidth}{0pt} 
+\thispagestyle{fancy}
+\setlength{\parindent}{0cm}
+
+% commands
+\renewcommand{\labelenumi}{\alph{enumi})}
+\newcommand{\aufgabenblatt}[1]{
+    \begin{center}
+    \Large\sffamily
+    \textbf{Aufgabenblatt #1}
+    \ifcomment
+    -- Lösungen
+    \fi
+\end{center}
+}
+\newcommand{\aufgabe}[2]{
+    \subsection*{Aufgabe #1 (#2)}
+}
+\newif\ifcomment
+\newcommand{\comment}[1]{
+    \ifcomment
+    \begin{framed}
+    \begin{minipage}[l]{0.9\textwidth}
+    #1
+    \end{minipage}
+    \end{framed}
+    \fi
+}
+\newcommand{\inputBlatt}[1]{
+    \newpage 
+    \setcounter{page}{1} 
+    \setcounter{equation}{0} 
+    \setcounter{footnote}{0} 
+    \input{#1}
+}
+
+\newcommand{\betrag}[1]{\left| #1 \right|}
+
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
