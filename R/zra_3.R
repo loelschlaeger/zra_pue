@@ -24,126 +24,88 @@ plot(her_f_min_ts, ylab = "min")
 
 ### b)
 
-T <- length(her_f_min)
-t <- 1:T
-fit1 <- lm(her_f_min ~ t)
-fit2 <- lm(her_f_min ~ t + I(t^2))
-fit3 <- lm(her_f_min ~ t + I(t^2) + I(t^3))
-fit4 <- lm(her_f_min ~ t + I(t^2) + I(t^3) + I(t^4))
-fit5 <- lm(her_f_min ~ t + I(t^2) + I(t^3) + I(t^4) + I(t^5))
+t <- 1:length(her_f_min_ts)
+dates <- her_f$Jahr[!is.na(her_f_min)]
+models <- list()
+models[[1]] <- lm(her_f_min ~ 1)
+max_degree <- 9
+for (d in 1:max_degree) {
+  models[[d + 1]] <- lm(her_f_min ~ poly(t, degree = d, raw = TRUE))
+}
 
-par(mfrow=c(2,3), mar=c(2.1,4.1,3.1,2.1))
-plot.ts(her_f_min_ts, lwd=2, col="black",
-        ylab="Bestzeit (Min)",
-        main="Bestzeiten beim Hermannnslauf 1972-2019")
-legend("topright", legend=c("ZR", "K=1","K=2","K=3","K=4","K=5"),
-       lwd=2, lty=1, bty="n")
-points(t,fit1$fitted,type="l", col="orange", lwd=2)
-points(z1,fit2$fitted,type="l", col="lightblue", lwd=2)
-points(z1,fit3$fitted,type="l", col="darkgreen", lwd=2)
-points(z1,fit4$fitted,type="l", col="purple", lwd=2)
-points(z1,fit5$fitted,type="l", col="brown", lwd=2)
-plot.ts(fm, lwd=2, col="black",
-        ylab="Bestzeit (Min)", main="K=1")
-points(z1,fit1$fitted,type="l", col="orange", lwd=2)
-plot.ts(fm, lwd=2, col="black",
-        ylab="Bestzeit (Min)", main="K=2")
-points(z1,fit2$fitted,type="l", col="lightblue", lwd=2)
-plot.ts(fm, lwd=2, col="black",
-        ylab="Bestzeit (Min)", main="K=3")
-points(z1,fit3$fitted,type="l", col="darkgreen", lwd=2)
-plot.ts(fm, lwd=2, col="black",
-        ylab="Bestzeit (Min)", main="K=4")
-points(z1,fit4$fitted,type="l", col="purple", lwd=2)
-plot.ts(fm, lwd=2, col="black",
-        ylab="Bestzeit (Min)", main="K=5")
-points(z1,fit5$fitted,type="l", col="brown", lwd=2)
-par(mfrow=c(1,1))
+plot(her_f_min_ts, ylab = "min")
+legend(
+  "topright", lty = 1, col = c(1, 1:(max_degree + 1) + 1),
+  legend = c("ZR", paste("k =", c(0, 1:max_degree)))
+)
+for (d in 1:(max_degree + 1)) {
+  fitted_values <- models[[d]]$fitted.values
+  points(dates, fitted_values, type = "l", col = d + 1)
+}
 
-fit8 <- lm(fm ~ z1 + z2 + z3 + z4 + z5 + I(z1^6) + I(z1^7) + I(z1^8))
-plot.ts(fm, lwd=2, col="black",
-        ylab="Bestzeit (Min)", main="Bestzeiten beim Hermannnslauf 1972-2019")
-points(z1,fit8$fitted,type="l", col="brown", lwd=2)
+## Modellselektion
+criteria <- matrix(NA, nrow = length(models), ncol = 6)
+colnames(criteria) <- c("F-Test", "R^2", "adj. R^2", "AIC", "BIC", "SSE")
+rownames(criteria) <- paste("k =", c(0, 1:max_degree))
 
-# c) Testabfolgen
 # F-Tests
-N <- length(fm)
-K_ur <- 5
-SSR_ur <- sum(fit5[["residuals"]]^2)
-
-# aufsteigend
-# H0: K_r = 0 vs H1: K_r > 0 d.h. beta_j = 0, j > 0, vs. beta_j != 0, j in {1,2,3,4,5}
-fit0 <- lm(fm ~ 1)
-K_r <- 0
-SSR_r <- sum(fit0[["residuals"]]^2)
-Fstat <- ((SSR_r - SSR_ur)/(K_ur - K_r))/((SSR_ur)/(N - K_ur - 1))
-(p <- 1 - pf(Fstat, K_ur - K_r, N - K_ur - 1))
-
-# H0: K_r = 1 vs H1: K_r > 1 d.h. beta_j = 0, j > 1, vs. beta_j != 0, j in {2,3,4,5}
-K_r <- 1
-SSR_r <- sum(fit1[["residuals"]]^2)
-Fstat <- ((SSR_r - SSR_ur)/(K_ur - K_r))/((SSR_ur)/(N - K_ur - 1))
-(p <- 1 - pf(Fstat, K_ur - K_r, N - K_ur - 1))
-
-# H0: K_r = 2 vs H1: K_r > 1 d.h. beta_j = 0, j > 2, vs. beta_j != 0, j in {3,4,5}
-K_r <- 2
-SSR_r <- sum(fit2[["residuals"]]^2)
-Fstat <- ((SSR_r - SSR_ur)/(K_ur - K_r))/((SSR_ur)/(N - K_ur - 1))
-(p <- 1 - pf(Fstat, K_ur - K_r, N - K_ur - 1))
-
-# H0: K_r = 3 vs H1: K_r > 3 d.h. beta_j = 0, j > 3, vs. beta_j != 0, j in {4,5}
-K_r <- 3
-SSR_r <- sum(fit3[["residuals"]]^2)
-Fstat <- ((SSR_r - SSR_ur)/(K_ur - K_r))/((SSR_ur)/(N - K_ur - 1))
-(p <- 1 - pf(Fstat, K_ur - K_r, N - K_ur - 1))
-
-# H0: K_r = 4 vs H1: K_r = 5 d.h. beta_5 = 0 vs. beta_5 != 0
-K_r <- 4
-SSR_r <- sum(fit4[["residuals"]]^2)
-Fstat <- ((SSR_r - SSR_ur)/(K_ur - K_r))/((SSR_ur)/(N - K_ur - 1))
-(p <- 1 - pf(Fstat, K_ur - K_r, N - K_ur - 1))
-# Entscheidung fuer fit5
-
-# absteigend
-# H0: K_r = 4 vs H1: K_r = 5 d.h. beta_5 = 0 vs. beta_5 != 0
-K_r <- 4
-SSR_r <- sum(fit4[["residuals"]]^2)
-Fstat <- ((SSR_r - SSR_ur)/(K_ur - K_r))/((SSR_ur)/(N - K_ur - 1))
-(p <- 1 - pf(Fstat, K_ur - K_r, N - K_ur - 1))
-# Entscheidung fuer fit5
-
-# d) Modellselektion
-AIC.calc <- function(SSR,K,N){
-  aic <- log(SSR/N) + 2*(K + 1)/N
-  return(aic)
+T <- length(dates)
+k <- max_degree
+residuals_ur <- models[[max_degree + 1]][["residuals"]]
+SSR_ur <- sum(residuals_ur^2)
+for (d in 1:(max_degree + 1)) {
+  k1 <- d - 1
+  residuals_r <- models[[d]][["residuals"]]
+  SSR_r <- sum(residuals_r^2)
+  F <- ((SSR_r - SSR_ur) / (k - k1)) / (SSR_ur / (T - k - 1))
+  p_value <- 1 - pf(q = F, df1 = k - k1, df2 = T - k - 1)
+  criteria[d, "F-Test"] <- p_value
 }
-BIC.calc <- function(SSR,K,N){
-  bic <- log(SSR/N) + (K + 1) * log(N)/N
-  return(bic)
+round(criteria, 4)
+
+# Modellselektionskriterien
+T <- length(dates)
+for (d in 1:(max_degree + 1)) {
+  model <- models[[d]]
+  k <- d - 1
+  SSR <- sum(model$residuals^2)
+  SST <- var(her_f_min, na.rm = TRUE) * (T - 1)
+  criteria[d, "R^2"] <- 1 - SSR / SST
+  criteria[d, "adj. R^2"] <- 1 - (SSR / (T - k - 1)) / (SST / (T - 1))
+  criteria[d, "AIC"] <- T * log(SSR / T) + 2 * (k + 1)
+  criteria[d, "BIC"] <- T * log(SSR / T) + log(T) * (k + 1)
 }
+round(criteria, 4)
 
-AICs <- numeric(5)
-BICs <- numeric(5)
-R2adjs <- numeric(5)
-
-fitList <- list(fit1, fit2, fit3, fit4, fit5)
-N <- length(fm)
-
-for (i in 1:5){
-  fit <- fitList[[i]]
-  SSR <- sum(fit[["residuals"]]^2)
-  K <- length(fit[["coefficients"]]) - 1
-  AICs[i] <- AIC.calc(SSR, K, N)
-  BICs[i] <- BIC.calc(SSR, K, N)
-  R2adjs[i] <- summary(fit)[["adj.r.squared"]]
+# Kreuzvalidierung
+full_data <- her_f_min
+T <- length(full_data)
+t <- 1:T
+train_proportion <- 0.6
+train_ind <- 1:round(T * train_proportion)
+train_data <- her_f_min[train_ind]
+test_ind <- t[-train_ind]
+test_data <- full_data[test_ind]
+model_train <- lm(train_data ~ 1)
+prediction <- as.matrix(rep(1, length(test_ind))) %*% model_train$coefficients
+criteria[1, "SSE"] <- sum(na.omit(as.numeric(test_data - prediction))^2)
+for (d in 1:max_degree) {
+  model_train <- lm(train_data ~ poly(train_ind, degree = d, raw = TRUE))
+  prediction <- cbind(1, poly(test_ind, degree = d, raw = TRUE)) %*% model_train$coefficients
+  criteria[d + 1, "SSE"] <- sum(na.omit(as.numeric(test_data - prediction))^2)
 }
+round(criteria, 4)
 
-tab <- cbind(AICs, BICs, R2adjs)
-tab <- round(tab, 3)
-rownames(tab) <- paste0("K=", 1:5)
-colnames(tab) <- c("AIC", "BIC", "R2adj")
-tab
+### c)
 
+plot(her_f_min_ts)
+abline(v = 2005, col = "red")
+t <- 1:length(her_f_min_ts)
+dates <- her_f$Jahr[!is.na(her_f_min)]
+T1 <- which(dates == 2005)
+zt <- t >= T1
+model <- lm(her_f_min ~ 1 + t + zt + I(t^2))
+points(dates, model$fitted.values, type = "l", col = "blue")
 
 
 # Aufgabe 3 ---------------------------------------------------------------
@@ -153,7 +115,7 @@ tab
 T <- 100
 t <- 1:T
 u <- rnorm(T) 
-c <- ts(3 + 0.4*t + 0.3*t^2 + u)
+c <- ts(3 + 0.4 * t + 0.3 * t^2 + u)
 plot(c)
 plot(diff(c))
 plot(diff(c, difference = 2))
