@@ -1,0 +1,100 @@
+\aufgabenblatt{4}
+
+\aufgabe{1}{Glättungsverfahren}
+
+\begin{enumerate}
+
+\item Sie haben in der Vorlesung mit der gleitenden, der polynomialen und der exponentiellen Glättung mehrere Verfahren kennengelernt, um alle Komponenten außer dem Trend aus einer Zeitreihe zu entfernen. Bitte beschreiben Sie Unterschiede und Gemeinsamkeiten. 
+
+\comment{
+\begin{itemize}
+    \item Bei der gleitenden Glättung wird die Beobachtung $y_t$ durch die gewichtete Summe $\sum_{j = -p}^f g_j y_{t+j}$ ersetzt. Die ersten $p$ und die letzten $f$ Beobachtungen gehen verloren. Oft verwendet man konstante Gewichte $g_j = (p + f + 1)^{-1}$.
+    \item Die polynomiale Glättung betrachtet $k$ Beobachtungen links und rechts von $y_t$ und passt daran ein Polynom des Grades $p$ mittels Regression an. Dann wird $y_t$ durch den prognostizierten Wert des Polynoms ersetzt. Polynomiale Glättung ist eine gleitende Glättung mit nicht-konstanten Gewichten.
+    \item Die exponentielle Glättung ist eine polynomiale Glättung, die alle Beobachtungen einbezieht. Der Approximationsfehler wird geometrisch abklingend mit der Distanz $\tau$ durch $(1-\alpha)^\tau$ gewichtet. Wenn das Polynom den Grad $p = 0$ hat, nennen wir das Verfahren `einfach', für $p = 1$ `zweifach'.
+\end{itemize}
+}
+
+\item Die Glättungsverfahren haben Parameter, die von dem Anwender gewählt werden müssen. Welchen Einfluss hat die Wahl auf das Ergebnis der Glättung?
+
+\comment{
+\begin{itemize}
+    \item Bei der gleitenden Glättung bestimmen $p$ und $f$, wie weit in die Vergangenheit und Zukunft geschaut wird. Je weiter, desto kleiner ist die Prognosevarianz. Je kürzer, desto besser ist die Anpassung an einen Trend. Bei konstanten Gewichten und $p = f$ bleibt ein linearer Trend erhalten. Ist $p > f$, so hinkt der geglättete Wert dem tatsächlichen hinterher (und umgekehrt), siehe c).
+    \item Bei der polynomialen Glättung muss zusätzlich der Polynomgrad $p$ gewählt werden. Je größer $p$, desto besser die Anpassung, aber auch desto höher die Prognosevarianz. 
+    \item Bei der exponentiellen Glättung muss zusätzlich der Gewichtungsparameter $\alpha$ bestimmt werden. Je kleiner $\alpha$, desto größer ist der Einfluss vergangener Beobachtungen.
+\end{itemize}
+}
+
+\item Sie finden im \href{https://moodle.uni-bielefeld.de/course/view.php?id=1035}{Lernraum der PÜ} den Datensatz `Geburten in Deutschland' mit monatlichen Geburtenzahlen in Deutschland. Bitte glätten Sie diese Zeitreihe mittels backward smoothing, forward smoothing und moving averages.
+
+\comment{
+Siehe \texttt{R} Code.
+}
+
+\end{enumerate}
+
+\aufgabe{2}{Exponentielle Glättung}
+
+\begin{enumerate}
+
+\item Sie haben in der Vorlesung die rekursive Formel 
+\begin{align*}
+    a_T = \alpha y_T + (1-\alpha) a_{T-1}
+\end{align*}
+für die Berechnung der einfachen exponentiellen Glättung kennengelernt. Bitte glätten Sie damit die Zeitreihe aus Aufgabe 1c). Welchen Einfluss hat die Wahl für $\alpha$ und $a_1$?
+
+\comment{
+Siehe \texttt{R} Code.
+}
+
+\item Führen Sie ebenfalls die zweifache exponentielle Glättung durch, wofür Sie die folgenden Rekursionsformeln kennengelernt haben:
+\begin{align*}
+    N_T &:= a_T + b_T T \\
+    N_T &= \alpha y_T + (1-\alpha) (N_{T-1} + b_{T-1}) \\
+    b_T &= (1 - \beta) b_{T-1} + \beta (N_T - N_{T-1})
+\end{align*}
+Probieren Sie wieder verschiedene Werte für $a_1$ (beziehungsweise $N_1$), $b_1$, $\alpha$ und $\beta$ aus.
+
+\comment{
+Siehe \texttt{R} Code.
+}
+
+\item Die \texttt{R} Funktion \texttt{HoltWinters()} hilft bei der Bestimmung der Parameter. Nutzen Sie die dort vorgeschlagenen Werte und prognostizieren Sie die Geburtenzahl für Juni 2023, basierend auf der einfachen sowie der zweifachen exponentiellen Glättung.
+
+\comment{
+Siehe \texttt{R} Code. Einfache prognostiziert $52861$, zweifache $50641$ Kinder.
+}
+
+\end{enumerate}
+
+\aufgabe{3}{Saisonmodellierung mittels Regression}
+
+Wir betrachten erneut die Zeitreihe aus Aufgabe 1c), aber hier nur ab 2010.
+
+\begin{enumerate}
+
+\item Wie interpretieren Sie die vorliegende Saison? Welche Werte haben die Beobachtungen mit den Indizes $2022.2$ und $2022.Q2$ basierend auf der Notation in der Vorlesung?
+
+\comment{
+Im Juli gibt es mehr Geburten als im Februar, also werden im Winter mehr Kinder gezeugt als im Sommer. Die Beobachtung $2022.2$ ist die Geburtenzahl im Februar $2022$ und beträgt $53727$. Die Beobachtung $2022.Q2$ sind die Geburten im zweiten Quartal 2022, also die Summe von $2022.4$, $2022.5$, $2022.6$; sie beträgt $187198$.
+}
+
+\item Bitte passen Sie an die Geburtenzeitreihe das lineare Modell
+\begin{align*}
+\hspace{-0.5cm}
+\text{Geburten}_{J.i} = b_0 + (12[J - 2009] + i)b_1 + (12[J - 2009] + i)^2b_2 + \sum_{j = 2}^{12} D_{J.i,j} \cdot S_j + u_{J.i}
+\end{align*}
+an. Die Notationen sind analog zur Vorlesung.
+
+\comment{
+Siehe \texttt{R} Code.
+}
+
+\item Wiederholen Sie die Anpassung aus b), aber nun mit allen $12$ Monatsdummies, dafür ohne die Konstante. Können Sie die Ergebnisse vergleichen?
+
+\comment{
+Siehe \texttt{R} Code. Beide Modelle sind äquivalent.
+}
+
+\end{enumerate}
+
+
