@@ -1,0 +1,112 @@
+\aufgabenblatt{6}
+
+\aufgabe{1}{Klausur 2016, Aufgabe 3}
+
+Angenommen, die Daten werden erzeugt mittels der Gleichung:
+\begin{align*}
+    y_t = \mu + u_t + \theta_2 u_{t-2}, \quad t = 1,2,3,\dots
+\end{align*}
+mit unabhängig identisch verteiltem Rauschen $(u_t)_{t \in \mathbb{Z}}$ mit Erwartungswert $0$ und Varianz $\sigma^2$.
+
+\begin{enumerate}
+
+\item Welche Eigenschaften muss ein Prozess haben, um stationär zu sein?
+
+\comment{
+Siehe Aufgabenblatt 5, Aufgabe 2a.
+}
+
+\item Bitte berechnen Sie den Erwartungswert und die Varianz von $y_t$ sowie die Kovarianzfunktion zum Lag $1$, $2$ und $3$.
+
+\comment{
+\begin{itemize}
+    \item $\E(y_t) = \mu$
+    \item $\Var(y_t) = \sigma^2 + \theta_2^2 \sigma^2$
+    \item $\Cov(y_t, y_{t+1}) = \E((y_t-\E(y_t))(y_{t+1}-\E(y_{t+1}))) \\ = \E((\mu + u_t + \theta_2 u_{t-2} - \mu)(\mu + u_{t+1}+\theta_2 u_{t-1} - \mu)) \\ = \E((u_t + \theta_2 u_{t-2})(u_{t+1}+\theta_2 u_{t-1})) \\ = \E(u_t u_{t+1} + \theta_2 u_t u_{t-1} + \theta_2 u_{t-2} u_{t+1} + \theta_2^2 u_{t-2} u_{t-1}) \\= \E(u_t u_{t+1}) + \E(\theta_2 u_t u_{t-1}) + \E(\theta_2 u_{t-2} u_{t+1}) + \E(\theta_2^2 u_{t-2} u_{t-1}) \\ = \E(u_t) \E(u_{t+1}) + \theta_2\E(u_t)\E(u_{t-1}) + \theta_2\E( u_{t-2})\E(u_{t+1}) + \theta_2^2\E( u_{t-2})(u_{t-1}) \\ = 0 \cdot 0 + \theta_2 \cdot 0 \cdot 0 + \theta_2 \cdot 0 \cdot 0 + \theta_2^2 \cdot 0 \cdot 0 = 0$
+    \item $\Cov(y_t, y_{t+2}) = \theta_2\sigma^2$
+    \item $\Cov(y_t, y_{t+3}) = 0$
+\end{itemize}
+}
+
+\item Welche Bedingungen müssen für die Parameter gelten, damit $(y_t)_{t\in \mathbb{N}}$ stationär ist?
+
+\comment{
+Keine Bedingungen sind erforderlich, ein $\text{MA}(2)$ Prozess ist immer stationär.
+}
+
+\end{enumerate}
+
+\aufgabe{2}{Klausur 2014, Aufgabe 3}
+
+Gegeben sei die $\text{AR}(1)$ Gleichung 
+\begin{align*}
+    y_t = 1 + 0.5y_{t-1} + \epsilon_t, \quad t \geq 1
+\end{align*}
+für weißes Rauschen $(\epsilon_t)_{t\in \mathbb{N}}$ mit Erwartungswert $0$ und Varianz $\frac{1}{10}$.
+
+\begin{enumerate}
+
+\item Bitte bestimmen Sie alle Lösungen dieser Differenzengleichung.
+
+\comment{
+Die Lösungen lauten $y_t = \sum_{\tau = 0}^{t-1} 0.5^\tau + 0.5^t y_0 + \sum_{\tau = 0}^{t-1} 0.5^\tau \epsilon_{t-\tau}$ für verschiedene Startwerte $y_0$ (darauf bezieht sich das \textit{``alle"} in der Aufgabenstellung).
+}
+
+\item Berechnen Sie die Verteilung des Startwertes $y_0$, der zu einer stationären Lösung führt.
+
+\comment{
+Damit $(y_t)_{t\in \mathbb{N}}$ stationär ist, muss $\E(y_t)$ unabhängig von $t$ sein:
+\begin{align*}
+    \E(y_t) = \E(y_{t-1}) &\Rightarrow  1 + 0.5 \E(y_{t-1}) + 0 = \E(y_{t-1}) \\
+    &\Rightarrow \E(y_{t-1}) = 2 \text{~für alle~}t.
+\end{align*}
+Für die Stationarität muss außerdem $\Var(y_t)$ unabhängig von $t$ sein:
+\begin{align*}
+    \Var(y_t) = \Var(y_{t-1}) &\Rightarrow \Var(1 + 0.5y_{t-1} + \epsilon_t) = \Var(y_{t-1}) \\ &\Rightarrow \Var(y_{t-1}) = \frac{1}{10(1-0.5^2)} = \frac{1}{7.5} \text{~für alle~}t.
+\end{align*}
+Also muss $\E(y_0) = 2$ und $\Var(y_0) = 1/7.5$ gelten. Wir müssen außerdem annehmen, dass $y_0$ unabhängig von $(\epsilon_t)_{t\in \mathbb{N}}$ ist.
+}
+
+\item Berechnen Sie die zugehörige Autokorrelationsfunktion für die Lags $k = 1,\dots,5$.
+
+\comment{
+Es gilt $\Cov(y_t, y_{t+k}) = 0.5^k \Var(y_t)$ (siehe Vorlesung). Die Autokorrelationsfunktion $\rho_k: k \to \Cov(y_t, y_{t+k}) / \Var(y_t) = 0.5^k$ hat für $k = 1,\dots,5$ die folgenden Werte:
+\begin{itemize}
+    \item $\rho_1 = 0.5$
+    \item $\rho_2 = 0.25$
+    \item $\rho_3 = 0.125$
+    \item $\rho_4 = 0.0625$
+    \item $\rho_5 = 0.03125$
+\end{itemize}
+}
+
+\end{enumerate}
+
+\aufgabe{3}{Schätzung von $\text{AR}(p)$ Prozessen}
+
+\begin{enumerate}
+
+\item Was ist die ``companion"\ Form eines $\text{AR}(p)$ Prozesses und wofür ist sie nützlich?
+
+\comment{
+Sie ist die Vektorgleichung $X_t = A X_{t-1} + U_t$ (siehe Vorlesung) und hilfreich, um den $\text{AR}(p)$ Fall auf den $\text{AR}(1)$ Fall zurückzuführen.
+}
+
+\item Welchen Annahmen des klassischen linearen Regressionsmodells können für die Kleinste-Quadrate Schätzung eines $\text{AR}(p)$ Prozesses erfüllt sein, welche nicht?
+
+\comment{
+Falls wir $y_t = \alpha_0 + \alpha_1 y_{t-1} + \dots + \alpha_p y_{t-p} + \epsilon_t$ mit linearer Regression schätzen, 
+\begin{itemize}
+    \item können MLR.1 (lineares Modell), MLR.3 (Information in den Regressoren, keine Multikollinearität), MLR.4 (bedingte Erwartung verschwindet), MLR.5 (Homoskedastie der Fehler) und MLR.6 (unabhängige Normalverteilung der Fehler) erfüllt sein,
+    \item aber MLR.2 (Zufallsstichprobe) ist auf jeden Fall verletzt.
+\end{itemize}
+Deshalb ist der KQ-Schätzer für endliche Stichproben in der Regel verzerrt, aber konsistent und asymptotisch normalverteilt (siehe Vorlesung).
+}
+
+\item Bitte simulieren Sie einen $\text{AR}(4)$ Prozess in \texttt{R} und schätzen Sie die Parameter.
+
+\comment{
+Siehe \texttt{R} Code.
+}
+
+\end{enumerate}

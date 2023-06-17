@@ -95,7 +95,10 @@ sum(subset(data, year == 2022 & month %in% 4:6)$births)
 ### b)
 
 model_1 <- lm(
-  formula = births ~ 1 + time(births) + I(time(births)^2) + as.factor(month),
+  formula = births ~ 1 + 
+    I(12 * (year - 2010) + month) + 
+    I((12 * (year - 2010) + month)^2) + 
+    as.factor(month),
   data = subset(data, year >= 2010)
 )
 summary(model_1)
@@ -103,7 +106,10 @@ summary(model_1)
 ### c)
 
 model_2 <- lm(
-  formula = births ~ 0 + time(births) + I(time(births)^2) + as.factor(month),
+  formula = births ~ 0 + 
+    I(12 * (year - 2010) + month) + 
+    I((12 * (year - 2010) + month)^2) + 
+    as.factor(month),
   data = subset(data, year >= 2010)
 )
 summary(model_2)

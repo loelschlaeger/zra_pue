@@ -1,0 +1,110 @@
+\aufgabenblatt{5}
+
+\aufgabe{1}{Zeitreihendekomposition}
+
+\begin{enumerate}
+
+\item Was bedeutet Zeitreihendekomposition und warum interessieren wir uns dafür?
+
+\comment{
+Zeitreihendekomposition meint die Zerlegung einer Zeitreihe in verschiedene Komponenten, zum Beispiel Trend, Saisonalität, Zyklen und Restkomponente gemäß dem klassischen Komponentenmodell. Die Zerlegung soll zu einem guten Verständnis der einzelnen Komponenten führen, mit dem Ziel, bessere Vorhersagen für die Gesamtzeitreihe zu treffen.
+}
+
+\item Bitte beschreiben Sie, was die \texttt{R} Funktion \texttt{decompose()} tut und wenden Sie die Funktion auf den `Geburten in Deutschland' Datensatz an (siehe Aufgabenblatt 4).
+
+\comment{
+Gemäß der Hilfeseite \texttt{?decompose} zerlegt diese Funktion eine Zeitreihe in eine Trend-, Saison- und Restkomponente. Sie hat folgende Argumente:
+\begin{itemize}
+    \item Das Argument \texttt{x} ist ein \texttt{ts} Object, also eine mit \texttt{ts()} erstellte Zeitreihe. 
+    \item Mit \texttt{type} kann zwischen einem additiven oder multiplikativen Modell gewählt werden (wir beschränken uns in der Vorlesung auf die additive Variante).
+    \item Dem Argument \texttt{filter} kann ein numerischer Vektor mit Gewichten für ein heuristisches Glättungsverfahren übergeben werden.
+\end{itemize}
+Die Funktion führt die folgenden Schritte durch:
+\begin{enumerate}
+    \item[1.] Bestimme den Trend durch heuristische Glättung. Die Fensterbreite entspricht der Frequenz (mit Modifikation im Falle einer geraden Frequenz).
+    \item[2.] Bestimme eine fixe Saisonkomponente als Durchschnittswert in den Saisons, nachdem der Trend abgezogen wurde.
+    \item[3.] Die Restkomponente ist dann einfach noch das, was von der Zeitreihe übrig bleibt, nachdem Trend und Saisonkomponente abgezogen wurden.
+\end{enumerate}
+Siehe \texttt{R} Code für die Anwendung auf den `Geburten in Deutschland' Datensatz.
+}
+
+\item Implementieren Sie selbst eine \texttt{R} Funktion, mit der die Schritte aus b) durchgeführt werden können und vergleichen Sie das Ergebnis Ihrer Funktion mit \texttt{decompose()}.
+
+\comment{
+Siehe \texttt{R} Code.
+}
+
+\end{enumerate}
+
+\aufgabe{2}{Stationäre Prozesse}
+
+\begin{enumerate}
+
+\item Was ist ein stationärer Prozess und warum interessieren wir uns dafür? 
+
+\comment{
+Ein stationärer (stochastischer) Prozess ist eine Folge Zufallsvariablen $(y_t)_{t \in T}$ mit
+\begin{enumerate}
+    \item[1.] konstantem Erwartungswert über die Zeit,
+    \item[2.] konstanter Varianz über die Zeit,
+    \item[3.] und Kovarianz zwischen $y_t$ und $y_{t+k}$, die nur von $k$ und nicht von $t$ abhängt.
+\end{enumerate}
+Wir benutzen stochastische Prozesse für die Modellierung von Zyklen. \textit{Stationäre} Prozesse bieten `Stabilität', damit können wir etwas über die Zyklen lernen.
+}
+
+\item Im Folgenden bezeichnet $\epsilon_t \sim WN(0, \sigma^2)$ unabhängiges weißes Rauschen, $t\in \mathbb{N}$ ist wie gewohnt der Zeitindex und $a,b \in \mathbb{R}$ sind beliebige aber feste Konstanten. Welche der folgenden Prozesse sind stationär?
+
+\begin{itemize}
+    \item $\displaystyle y_t = a\epsilon_t + b$,
+    \item $\displaystyle y_t = \epsilon_t + b \epsilon_{t-2}$,
+    \item $\displaystyle y_t = t + b \epsilon_0$,
+    \item $\displaystyle y_t = a y_{t-1} + \epsilon_t$, wobei hier $|a| < 1$ und $y_0 = 0$ gilt.
+\end{itemize}
+
+\comment{
+Wir prüfen die drei unter a) aufgeführten Eigenschaften für die vier Prozesse:
+\begin{itemize}
+    \item[1.] Der erste Prozess ist stationär: Erwartungswert und Varianz sind $b$ bzw.\ $a^2\sigma^2$ (also zeitunabhängig), die Kovarianz zwischen $y_t$ und $y_{t+k}$ ist $0$ (für $k \geq 1$).
+    \item[2.] Der zweite Prozess ist auch stationär: $\mathbb{E}(y_t) = 0$, $\Var(y_t) = (1+b^2)\sigma^2$, $\Cov(y_t, y_{t+1}) = 0$, $\Cov(y_t, y_{t+2}) = b\sigma^2$, $\Cov(y_t, y_{t+k}) = 0$ für $k > 2$.
+    \item[3.] Der dritte Prozess ist \textit{nicht} stationär, denn $\mathbb{E}(y_t) = t$ (zeitabhängig).
+    \item[4.] Der vierte Prozess ist ebenfalls \textit{nicht} stationär. Wir können $y_t = ay_{t-1} + \epsilon_t$ als $y_t = \sum_{i=0}^t \alpha^i \epsilon_{t-i} + \alpha^t y_0$ umschreiben und sehen, dass $\Var(y_t) = \sum_{i=0}^t \alpha^{2i} \sigma^2$ (zeitabhängig). Beachte aber, dass der Prozess stationär \textit{wäre}, wenn $y_0$ nicht deterministisch, sondern eine (spezielle) Zufallsvariable ist (siehe Vorlesung).
+\end{itemize}
+}
+
+\item Bitte simulieren Sie jeweils eine Trajektorie der Prozesse aus b), wobei Sie normalverteiltes weißes Rauschen, $a = -0.5$ und $b = 0.1$ verwenden.
+
+\comment{
+Siehe \texttt{R} Code.
+}
+
+\end{enumerate}
+
+\aufgabe{3}{Korrelogramme}
+
+\begin{enumerate}
+
+\item Was ist ein Korrelogramm und warum interessieren wir uns dafür?
+
+\comment{
+Ein Korrelogramm ist die Visualisierung der Funktion $k \to \Cov(y_t, y_{t+k}) / \Var(y_t)$, die den `Lag' $k$ auf die Autokorrelationskoeffizienten abbildet. Damit kann ein stationärer Prozess identifiziert werden. Für eine empirische Zeitreihe werden die Autokorrelationskoeffizienten geschätzt (siehe Vorlesung), das ergibt ein \textit{empirisches} Korrelogramm.
+}
+
+\item Bitte erstellen Sie empirische Korrelogramme für die in 2c) simulierten Trajektorien. Welche Besonderheiten fallen auf?
+
+\comment{
+Siehe \texttt{R} Code für die empirischen Korrelogramme. Geplottet werden die empirisch geschätzten Autokorrelationskoeffizienten beginnend ab `Lag' $0$ (dieser Wert ist immer $1$). Zusätzlich sehen wir blau gestrichelte Linien, die (standardmäßig) ein 95\% Konfidenzintervall für die geschätzten Autokorrelationen um die $0$ liefern (mehr Details hierzu gibt es bald in der Vorlesung). 
+\begin{itemize}
+    \item Der erste Prozess weist keine signifikanten Autokorrelationen auf.
+    \item Gleiches gilt für den zweiten Prozess, aber hier wird eine signifikante Autokorrelation im zweiten Lag deutlich, wenn $T$ oder $b$ erhöht werden.
+    \item Der dritte Prozess hat eine deutliche Autokorrelation über die Zeit.
+    \item Der vierte Prozess hat eine oszillierende (da $a$ negativ ist) Autokorrelation, die geometrisch abklingend ist. Das wird deutlicher, wenn $a$ (betragsmäßig) oder $T$ größer gewählt werden.
+\end{itemize}
+}
+
+\item Häufig betrachtet man auch die \emph{partielle} Autokorrelationsfunktion. Wo liegt der Unterschied und wie kann sie geschätzt werden?
+
+\comment{
+Die \textit{partielle} Autokorrelationsfunktion visualisiert die Autokorrelationen, die sich ergeben, wenn die Autokorrelationen früherer `Lags' herausgerechnet werden. Damit bieten sie einen besseren Überblick. Beachte, dass die Autokorrelation und die partielle Autokorrelation für den `Lag' $1$ identisch sind. Die partiellen Autokorrelationen können per Regression geschätzt werden (siehe Vorlesung) oder mit dem sogenannten \href{https://de.wikipedia.org/wiki/Yule-Walker-Gleichungen}{Yule-Walker Schätzer}.
+}
+
+\end{enumerate}
