@@ -1,7 +1,78 @@
 \aufgabenblatt{7}
 
-\aufgabe{1}{}
+\aufgabe{1}{Modellselektion}
 
-\aufgabe{2}{}
+Sie finden im \href{https://moodle.uni-bielefeld.de/course/view.php?id=1035}{Lernraum der PÜ} die Datei \texttt{secret.csv}, die eine Zeitreihe enthält.
 
-\aufgabe{3}{}
+\begin{enumerate}
+
+\item Bitte führen Sie eine Trend- und Saisonbereinigung der Zeitreihe durch.
+
+\comment{
+Visuell setzen wir die Frequenz auf 12 fest. Mit \texttt{decompose()} eliminieren wir am einfachsten Trend und Saison, siehe \texttt{R} Code.
+}
+
+\item Untersuchen Sie die verbleibende Komponente mithilfe von ACF und PACF. Können Sie sich auf dieser Basis für ein MA- oder AR-Modell entscheiden?
+
+\comment{
+Die ACF klingt geometrisch ab, die PACF ist nach Lag 3 nicht mehr signifikant von null verschieden. Beides deutet auf einen AR(3) Prozess hin, siehe \texttt{R} Code.
+}
+
+\item Passen Sie mit der \texttt{arima()} Funktion unterschiedliche MA($q$)- und AR($p$)-Modelle für $p,q \in \{1,2,3,4\}$ an und führen Sie eine Modellselektion mittels AIC durch. 
+
+\emph{Hinweis:} Der Listenoutput von \texttt{arima()} hat einen Eintrag \texttt{aic} mit dem AIC-Wert.
+\end{enumerate}
+
+\comment{
+Das AIC ist am kleinsten für das AR(4)-Modell, siehe \texttt{R} Code.
+}
+
+\aufgabe{2}{Signifikanztest für Autokorrelation}
+
+Betrachten Sie erneut den Geburten Datensatz, den Sie bereits von Aufgabenblatt 4 kennen.
+
+\begin{enumerate}
+
+\item Schätzen Sie für den Zeitraum Januar 2000 bis einschließlich Februar 2020 ein gemeinsames Trend- und Saisonmodell.
+
+\comment{
+Im \texttt{R} Code wurde ein lineares Regressionsmodell mit Zeitindex im Grad 1, 2 und 3 und Monatsdummies geschätzt.
+}
+ 
+\item Schätzen Sie für die Modellresiduen ein adäquates zyklisches Modell.
+
+\comment{
+Mit Blick auf die ACF und PACF habe ich mich für ein AR(2)-Modell entschieden.
+}
+
+\item Führen Sie mit \texttt{Box.test()} einen Box-Pierce und einen Ljung-Box Test zum Signifikanzniveau 10\% durch, um zu überprüfen, ob nach der Zyklusmodellierung noch signifikante Autokorrelation bis zur 5. Ordnung vorhanden ist.
+
+\comment{
+Gemäß Box-Pierce nein, gemäß Ljung-Box ja, siehe \texttt{R} Code.
+}
+
+\end{enumerate}
+
+\aufgabe{3}{Prognose}
+
+\begin{enumerate}
+
+\item Betrachten Sie erneut den Geburten Datensatz aus Aufgabe 2 bis einschließlich Februar 2020. Welche Vermutungen haben Sie über den weiteren Zeitreihenverlauf?
+
+\comment{
+Die Saison wird wohl fortgesetzt, der Trend nimmt wohl ab.
+}
+
+\item Berechnen Sie die Prognose der in Aufgabe 2b) bestimmten zyklischen Komponente für März 2020 bis einschließlich Februar 2023. 
+
+\comment{
+Siehe \texttt{R} Code.
+}
+
+\item Plotten Sie den gesamten Verlauf der Geburten Zeitreihe. Fügen Sie dann gefittete Werte und die Prognose aus dem Komponentenmodell ein.
+
+\comment{
+Siehe \texttt{R} Code.
+}
+
+\end{enumerate}
