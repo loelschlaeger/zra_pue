@@ -1,4 +1,4 @@
-# Materials for course "Computergestützte Methoden" 
+# Materials for course "Zeitreihenanalyse" 
 
 :teacher: Dietmar Bauer (lecture), Lennart Oelschläger (tutorial)
 
